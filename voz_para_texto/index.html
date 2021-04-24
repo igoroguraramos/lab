@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Para Texto</title>
+</head>
+<body>
+    <button id="btnGravar">Gravar</button>
+    <h2 class="mt-4 text-light">Resultado</h2>
+    <textarea id="resultado" rows="20" style="height: 250px; border-radius: 8px; width: 100%;"></textarea>
+</body>
+</html>
+
+<script>
+    //Verifica se o navegador é compativel
+    if("webkitSpeechRecognition" || "SpeechRecognition" in window){
+        let speech_api = window.SpeechRecognition || window.webkitSpeechRecognition;
+        //Instancia a API
+        let reconhecer_fala  = new speech_api();
+
+        //True - Permite falar sem continuamente / False - Apenas Mantem a ultima Fala
+        reconhecer_fala.continuous = false;
+        //True - Permite mostrar o resultado parcial / False - Apenas mostra o resultado final
+        reconhecer_fala.interimResults = false;
+        reconhecer_fala.lang = "pt-BR";
+
+        //Se o reconhecimento de fala for acionado mudar o nome do botao
+        reconhecer_fala.onstart = () => {
+            document.querySelector("#btnGravar").innerHTML = "Gravando.....";
+        };
+
+        //Se o reconhecimento de fala for parado mudar o nome do botao
+        reconhecer_fala.onend = () => {
+            document.querySelector("#btnGravar").innerHTML = "Gravar";
+        };
+
+        //Resultado 
+        //let transcricao_final = "";
+        reconhecer_fala.onresult = (event) => {
+            let transcricao = event.results[0][0].transcript;
+            document.querySelector("#resultado").innerHTML = transcricao.toUpperCase();
+
+            //Se a fala for continua modificar configurações e descomentar esse bloco
+            /*
+                let trascricao_provisoria = "";
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    // Se o resultado for o final então pegue essa ultima transcricao e salve
+                    if (event.results[i].isFinal) {
+                        transcricao_final += event.results[i][0].transcript;
+                    } 
+                    //Senão continue salvando a transcricao provisória
+                    else {
+                        transcricao_provisoria += event.results[i][0].transcript;
+                    }
+                }
+                document.querySelector("#final").innerHTML = transcricao_final;
+                document.querySelector("#provisoria").innerHTML = transcricao_provisoria;
+            */
+        };
+
+        //Clique do Botão
+        document.querySelector("#btnGravar").onclick = () => {
+            reconhecer_fala.start();
+        };
+
+
+    }
+
+
+</script>
